@@ -1,0 +1,11 @@
+# folder
+.git/
+.vs/
+.vscode/
+Debug/
+LeetCode-Algorithm/Debug/
+
+# file
+LeetCode-Algorithm/LeetCode-Algorithm.vcxproj
+LeetCode-Algorithm/LeetCode-Algorithm.vcxproj.filters
+LeetCode-Algorithm/LeetCode-Algorithm.vcxproj.user
