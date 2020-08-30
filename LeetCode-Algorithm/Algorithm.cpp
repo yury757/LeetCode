@@ -5,6 +5,7 @@
 #include <queue>
 #include <map>
 #include <set>
+#include <stack>
 #include <unordered_map>
 
 using namespace std;
@@ -64,6 +65,12 @@ int main()
 
     bool judgeCircle(string moves);
     //cout << judgeCircle("UD");
+
+    string reverseWords(string s);
+    //cout << reverseWords("  a");
+
+    string shortestPalindrome(string s);
+    cout << shortestPalindrome("aacecaaa");
 }
 
 void printVector(vector<string> v) {
@@ -630,4 +637,69 @@ bool judgeCircle(string moves) {
         }
     }
     return x == 0 && y == 0;
+}
+
+
+//557. 反转字符串中的单词 III
+//给定一个字符串，你需要反转字符串中每个单词的字符顺序，同时仍保留空格和单词的初始顺序。
+//示例：
+//输入："Let's take LeetCode contest"
+//输出："s'teL ekat edoCteeL tsetnoc"
+//提示：
+//在字符串中，每个单词由单个空格分隔，并且字符串中不会有任何额外的空格。
+string reverseWords(string s) {
+    stack<int> temp557;
+    string res;
+    for (char ss : s) {
+        if (ss != ' ') {
+            temp557.push(ss);
+        }
+        else {
+            while (!temp557.empty()) {
+                res.push_back(temp557.top());
+                temp557.pop();
+            }
+            res.push_back(' ');
+        }
+    }
+    while (!temp557.empty()) {
+        res.push_back(temp557.top());
+        temp557.pop();
+    }
+    return res;
+}
+
+//214. 最短回文串
+//给定一个字符串 s，你可以通过在字符串前面添加字符将其转换为回文串。找到并返回可以用这种方式转换的最短回文串。
+//示例 1:
+//输入: "aacecaaa"
+//输出 : "aaacecaaa"
+//示例 2 :
+//输入 : "abcd"
+//输出 : "dcbabcd"
+string shortestPalindrome(string s) {
+    // 官方代码，KMP
+    int n = s.size();
+    vector<int> fail(n, -1);
+    for (int i = 1; i < n; ++i) {
+        int j = fail[i - 1];
+        while (j != -1 && s[j + 1] != s[i]) {
+            j = fail[j];
+        }
+        if (s[j + 1] == s[i]) {
+            fail[i] = j + 1;
+        }
+    }
+    int best = -1;
+    for (int i = n - 1; i >= 0; --i) {
+        while (best != -1 && s[best + 1] != s[i]) {
+            best = fail[best];
+        }
+        if (s[best + 1] == s[i]) {
+            ++best;
+        }
+    }
+    string add = (best == n - 1 ? "" : s.substr(best + 1, n));
+    reverse(add.begin(), add.end());
+    return add + s;
 }
