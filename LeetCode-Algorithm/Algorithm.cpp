@@ -70,7 +70,13 @@ int main()
     //cout << reverseWords("  a");
 
     string shortestPalindrome(string s);
-    cout << shortestPalindrome("aacecaaa");
+    //cout << shortestPalindrome("aacecaaa");
+
+    int inrooms_sum(vector<int> & rooms);
+    bool dfs841(int start, vector<vector<int>> & rooms, vector<int> & inrooms);
+    bool canVisitAllRooms(vector<vector<int>> & rooms);
+    //vector<vector<int>> rooms = { {2, 3}, { }, { 2 }, {1, 3, 1} };
+    //cout << canVisitAllRooms(rooms);
 }
 
 void printVector(vector<string> v) {
@@ -702,4 +708,95 @@ string shortestPalindrome(string s) {
     string add = (best == n - 1 ? "" : s.substr(best + 1, n));
     reverse(add.begin(), add.end());
     return add + s;
+}
+
+int inrooms_sum(vector<int>& rooms) {
+    int inrooms_sumvalue = 0;
+    for (int i : rooms) {
+        inrooms_sumvalue += i;
+    }
+    return inrooms_sumvalue;
+}
+
+bool dfs841(int start, vector<vector<int>>& rooms, vector<int>& inrooms) {
+    // 一开始理解成了每打开一扇门只能取走其中一把钥匙，可以重复进门，但是之前取走的钥匙就没了。
+    // 因此算法设计成了每打开一扇门都要判断是否所有门都打开过，同时不能用计数的方式判断所有们是否打开过，因为有重复开门的情况。
+    inrooms[start] = 1;
+    if (inrooms_sum(inrooms) == rooms.size()) {
+        return 1;
+    }
+    if (rooms[start].size() == 0) {
+        return 0;
+    }
+    for (int i = 0; i < rooms[start].size(); i++) {
+        if (inrooms[rooms[start][i]] != 0) {
+            continue;
+        }
+        if (dfs841(rooms[start][i], rooms, inrooms)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+//841. 钥匙和房间
+//有 N 个房间，开始时你位于 0 号房间。每个房间有不同的号码：0，1，2，...，N - 1，并且房间里可能有一些钥匙能使你进入下一个房间。
+//在形式上，对于每个房间 i 都有一个钥匙列表 rooms[i]，每个钥匙 rooms[i][j] 由[0, 1，...，N - 1] 中的一个整数表示，其中 N = rooms.length。 钥匙 rooms[i][j] = v 可以打开编号为 v 的房间。
+//最初，除 0 号房间外的其余所有房间都被锁住。
+//你可以自由地在房间之间来回走动。
+//如果能进入每个房间返回 true，否则返回 false。
+//示例 1：
+//输入 : [[1], [2], [3], []]
+//输出 : true
+//解释 :
+//    我们从 0 号房间开始，拿到钥匙 1。
+//    之后我们去 1 号房间，拿到钥匙 2。
+//    然后我们去 2 号房间，拿到钥匙 3。
+//    最后我们去了 3 号房间。
+//    由于我们能够进入每个房间，我们返回 true。
+//    示例 2：
+//
+//    输入： [[1, 3], [3, 0, 1], [2], [0]]
+//    输出：false
+//    解释：我们不能进入 2 号房间。
+//    提示：
+//    1 <= rooms.length <= 1000
+//    0 <= rooms[i].length <= 1000
+//    所有房间中的钥匙数量总计不超过 3000。
+bool canVisitAllRooms(vector<vector<int>>& rooms) {
+    vector<int> inrooms = vector<int>(rooms.size(), 0);
+    return dfs841(0, rooms, inrooms);
+}
+
+bool room_empty(vector<int> room) {
+    for (int i : room) {
+        if (i != -1) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+//841-2
+//若将上题的题目逻辑改成：每次打开一扇门只能取走其中一把钥匙，下次再进入这扇门时原来的钥匙不见了，则相应的深度优先搜索算法如下
+bool dfs841_2(int start, vector<vector<int>>& rooms, vector<int>& inrooms) {
+    inrooms[start] = 1;
+    if (inrooms_sum(inrooms) == rooms.size()) {
+        return 1;
+    }
+    if (room_empty(rooms[start])) {
+        return 0;
+    }
+    for (int i = 0; i < rooms[start].size(); i++) {
+        if (rooms[start][i] == -1) {
+            continue;
+        }
+        int start_temp = rooms[start][i];
+        rooms[start][i] = -1;
+        if (dfs841(start_temp, rooms, inrooms)) {
+            return 1;
+        }
+        rooms[start][i] = start_temp;
+    }
+    return 0;
 }
