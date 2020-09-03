@@ -108,6 +108,10 @@ int main()
     CharType toCharType(char ch);
     bool isNumber(string s);
     //cout << isNumber("  3453.66E4");
+
+    bool dfs51(vector<string> & queens, int& pos_x, int& pos_y, vector<int> & x, vector<int> & y, vector<int> & p, vector<int> & q, int last_y, int n);
+    vector<vector<string>> solveNQueens(int n);
+    printTwoVector(solveNQueens(5));
 }
 
 void printVector(vector<string> v) {
@@ -930,7 +934,7 @@ CharType toCharType(char ch) {
 
 //剑指 Offer 20. 表示数值的字符串
 //请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。例如，字符串"+100"、"5e2"、"-123"、"3.1416"、"-1E-16"、"0123"都表示数值，但"12e"、"1a3.14"、"1.2.3"、"+-5"及"12e+5.4"都不是。
-//和我的思想一样，只是不知道这种思想名字原来叫有限状态自动机，明天把自己代码贴过来，在公司电脑上
+//和我的思路一样，只是不知道这种思想名字原来叫有限状态自动机
 bool isNumber(string s) {
     unordered_map<State, unordered_map<CharType, State>> transfer{
         {
@@ -1004,4 +1008,77 @@ bool isNumber(string s) {
         }
     }
     return st == STATE_INTEGER || st == STATE_POINT || st == STATE_FRACTION || st == STATE_EXP_NUMBER || st == STATE_END;
+}
+
+vector<vector<string>> res51;
+void dfs51(vector<string>& queens, int& pos_x, int& pos_y, vector<int>& x, vector<int>& y, vector<int>& p, vector<int>& q, int last_y, int n) {
+    if (x[pos_x] > 0 || y[pos_y] > 0 || p[pos_x + pos_y] > 0 || q[pos_x - pos_y + n - 1] > 0) { // 每次进来先判断当前坐标在四个轴是否已经有皇后了
+        return;
+    }
+    if (pos_x == n - 1) { // pos_x坐标已经到底部，且当前坐标位置在上面没有被返回，说明是一个有效位置，则在当前位置摆放一个皇后，且把当前棋盘收藏到结果集中，再把这个皇后撤掉。下面已经没有更多行，因此返回。该行的右边位置是否有效的判断由上行皇后的下一个for循环来控制，因此不用判断右边位置，直接返回。
+        queens[pos_x][pos_y] = 'Q';
+        res51.push_back(queens);
+        queens[pos_x][pos_y] = '.';
+        return;
+    }
+    // 若pos_x坐标还没到底部，则在当前位置摆放一个皇后，为四个轴的相应位置+1
+    x[pos_x] += 1;
+    y[pos_y] += 1;
+    p[pos_x + pos_y] += 1;
+    q[pos_x - pos_y + n - 1] += 1;
+    queens[pos_x][pos_y] = 'Q';
+    // 该位置在之前已经摆好了的皇后的条件下是有效的，但不一定绝对是有效的，要判断下面行是否有有效位置可以摆放皇后
+    // 因此行++， 列恢复为0，前往下一行找是否有有效位置
+    pos_x++;
+    pos_y = 0;
+    for (int i = pos_y; i < n; i++) {
+        // 这个循环和主函数中的循环是不是很像
+        // 这里每次都要把i坐标当成旧的pox_y坐标传给下一行，下一行全部判断完毕时恢复pox_y坐标，pos_x坐标不用传递，直接-1就行
+        dfs51(queens, pos_x, pos_y, x, y, p, q, i, n);
+        pos_y++;
+    }
+    // 下一行循环完毕后，因为是pos_x和pos_y都是引用类型，因此要恢复原先的pos_x和pox_y
+    pos_x--;
+    pos_y = last_y;
+    x[pos_x] -= 1; // 撤走皇后，并把该皇后位置在四个轴上的相应位置的值-1
+    y[pos_y] -= 1;
+    p[pos_x + pos_y] -= 1;
+    q[pos_x - pos_y + n - 1] -= 1;
+    queens[pos_x][pos_y] = '.';
+    return; // 该位置判断完毕，由调用该函数的循环去执行pos_y++，即再去判断下一个位置。第一行的下一个位置是由主函数的for循环控制，以后行的下一个位置是由某个递归函数中的for循环控制。
+}
+
+//51. N 皇后
+//n 皇后问题研究的是如何将 n 个皇后放置在 n×n 的棋盘上，并且使皇后彼此之间不能相互攻击。
+//上图为 8 皇后问题的一种解法。
+//给定一个整数 n，返回所有不同的 n 皇后问题的解决方案。
+//每一种解法包含一个明确的 n 皇后问题的棋子放置方案，该方案中 'Q' 和 '.' 分别代表了皇后和空位。
+//示例：
+//输入：4
+//输出： [
+//    [".Q..",  // 解法 1
+//        "...Q",
+//        "Q...",
+//        "..Q."],
+//
+//        ["..Q.",  // 解法 2
+//        "Q...",
+//        "...Q",
+//        ".Q.."]
+//]
+//解释: 4 皇后问题存在两个不同的解法。
+//提示：
+//皇后彼此不能相互攻击，也就是说：任何两个皇后都不能处于同一条横行、纵行或斜线上。
+vector<vector<string>> solveNQueens(int n) {
+    int pos_x = 0, pos_y = 0; // xy当前位置
+    vector<int> x = vector<int>(n, 0); // x轴各个位置是否有皇后
+    vector<int> y = vector<int>(n, 0); // y轴各个位置是否有皇后
+    vector<int> p = vector<int>(2 * n - 1, 0); // 左斜轴各个位置是否有皇后
+    vector<int> q = vector<int>(2 * n - 1, 0); // 右斜轴各个位置是否有皇后
+    vector<string> queens = vector<string>(n, string(n, '.')); // 当前已经摆好的棋盘
+    for (int i = 0; i < n; i++) {
+        dfs51(queens, pos_x, pos_y, x, y, p, q, i, n);
+        pos_y++;
+    }
+    return res51;
 }
