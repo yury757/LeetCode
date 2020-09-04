@@ -110,8 +110,14 @@ int main()
     //cout << isNumber("  3453.66E4");
 
     bool dfs51(vector<string> & queens, int& pos_x, int& pos_y, vector<int> & x, vector<int> & y, vector<int> & p, vector<int> & q, int last_y, int n);
-    vector<vector<string>> solveNQueens(int n);
-    printTwoVector(solveNQueens(5));
+    //vector<vector<string>> solveNQueens(int n);
+    //printTwoVector(solveNQueens(5));
+
+    void dfs257(TreeNode * root, string & string_temp257, vector<string> & res257);
+    vector<string> binaryTreePaths(TreeNode * root);
+
+    string int2str(int a);
+    //cout << int2str(-234);
 }
 
 void printVector(vector<string> v) {
@@ -1081,4 +1087,78 @@ vector<vector<string>> solveNQueens(int n) {
         pos_y++;
     }
     return res51;
+}
+
+map<int, char> int2strmap = {
+    {0, '0'},
+    {1, '1'},
+    {2, '2'},
+    {3, '3'},
+    {4, '4'},
+    {5, '5'},
+    {6, '6'},
+    {7, '7'},
+    {8, '8'},
+    {9, '9'},
+};
+
+string int2str(int a) {
+    string r;
+    int nag = 0;
+    if (a < 0) {
+        nag = 1;
+        a = -a;
+    }
+    while (true) {
+        r.push_back(int2strmap[a % 10]);
+        a = (int)(a / 10);
+        if (a == 0) {
+            break;
+        }
+    }
+    if (nag = 1) r.push_back('-');
+    reverse(r.begin(), r.end());
+    return r;
+}
+
+void dfs257(TreeNode* root, string& string_temp257, vector<string>& res257) {
+    if (root == nullptr) {
+        return;
+    }
+    string string_num = to_string(root->val);
+    string_temp257 += string_num;
+    if (root->left == nullptr && root->right == nullptr) {
+        res257.push_back(string_temp257);
+    }
+    string_temp257.append("->");
+    dfs257(root->left, string_temp257, res257);
+    dfs257(root->right, string_temp257, res257);
+    string_temp257.pop_back();
+    string_temp257.pop_back();
+    for (int i = 0; i < string_num.size(); i++) {
+        string_temp257.pop_back();
+    }
+}
+
+//257. 二叉树的所有路径
+//给定一个二叉树，返回所有从根节点到叶子节点的路径。
+//说明 : 叶子节点是指没有子节点的节点。
+//示例 :
+//输入:
+//   1
+//  / \
+// 2   3
+//  \
+//   5
+//输出: ["1->2->5", "1->3"]
+//解释 : 所有根节点到叶子节点的路径为 : 1->2->5, 1->3
+vector<string> binaryTreePaths(TreeNode* root) {
+    string string_temp257;
+    string string_num;
+    vector<string> res257;
+    if (root == nullptr) {
+        return res257;
+    }
+    dfs257(root, string_temp257, res257);
+    return res257;
 }
