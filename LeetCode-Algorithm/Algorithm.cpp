@@ -118,6 +118,11 @@ int main()
 
     string int2str(int a);
     //cout << int2str(-234);
+
+    int factorial(int n);
+    void dfs60(vector<int> & nums, int& n, int& k, int& i, string & res60);
+    string getPermutation(int n, int k);
+    cout << getPermutation(8, 234);
 }
 
 void printVector(vector<string> v) {
@@ -1161,4 +1166,79 @@ vector<string> binaryTreePaths(TreeNode* root) {
     }
     dfs257(root, string_temp257, res257);
     return res257;
+}
+
+int factorial(int n) {
+    if (n == 0) {
+        return 1;
+    }
+    else if (n < 0) {
+        if (-n % 2 > 0) {
+            return -factorial(-n);
+        }
+        else {
+            return factorial(-n);
+        }
+    }
+    else {
+        return n * factorial(n - 1);
+    }
+}
+
+void dfs60(vector<int>& nums, int& n, int& k, int& i, string &res60) {
+    int m = factorial(n - 1);
+    while (true) {
+        if (n == 0) {
+            break;
+        }
+        if (nums[i] == -1) {
+            i++;
+            continue;
+        }
+        if (k > m) {
+            k = k - m;
+            i++;
+        }
+        else {
+            res60 += to_string(nums[i]);
+            nums[i] = -1;
+            n--;
+            i = 0;
+            dfs60(nums, n, k, i, res60);
+            break;
+        }
+    }
+}
+
+//60. 第k个排列
+//给出集合[1, 2, 3, …, n]，其所有元素共有 n!种排列。
+//按大小顺序列出所有排列情况，并一一标记，当 n = 3 时, 所有排列如下：
+//"123"
+//"132"
+//"213"
+//"231"
+//"312"
+//"321"
+//给定 n 和 k，返回第 k 个排列。
+//说明：
+//给定 n 的范围是[1, 9]。
+//给定 k 的范围是[1, n!]。
+//示例 1:
+//输入: n = 3, k = 3
+//输出 : "213"
+//示例 2 :
+//    输入 : n = 4, k = 9
+//    输出 : "2314"
+string getPermutation(int n, int k) {
+    if (k < n || n <= 0 || n > 9 || k <= 0) {
+        throw new exception("输入参数错误");
+    }
+    vector<int> nums;
+    for (int i = 0; i < n; i++) {
+        nums.push_back(i+1);
+    }
+    string res60;
+    int i = 0;
+    dfs60(nums, n, k, i, res60);
+    return res60;
 }
