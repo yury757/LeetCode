@@ -121,8 +121,8 @@ int main()
 
     int factorial(int n);
     void dfs60(vector<int> & nums, int& n, int& k, int& i, string & res60);
-    string getPermutation(int n, int k);
-    cout << getPermutation(8, 234);
+    //string getPermutation(int n, int k);
+    //cout << getPermutation(8, 234);
 }
 
 void printVector(vector<string> v) {
@@ -1241,4 +1241,47 @@ string getPermutation(int n, int k) {
     int i = 0;
     dfs60(nums, n, k, i, res60);
     return res60;
+}
+
+struct TreeNode2 {
+    int val;
+    TreeNode2 *left;
+    TreeNode2 *right;
+    TreeNode2(int x) : val(x), left(NULL), right(NULL) {}
+};
+ 
+vector<vector<int>> res107;
+
+void dfs107(TreeNode2* root, int i) {
+    if (root == nullptr) {
+        return;
+    }
+    vector<int> temp107;
+    if (res107.size() <= i) {
+        res107.push_back(temp107);
+    }
+    res107[i].push_back(root->val);
+    dfs107(root->left, i + 1);
+    dfs107(root->right, i + 1);
+}
+
+//107. 二叉树的层次遍历 II
+//给定一个二叉树，返回其节点值自底向上的层次遍历。 （即按从叶子节点所在层到根节点所在的层，逐层从左向右遍历）
+//例如：
+//给定二叉树[3, 9, 20, null, null, 15, 7],
+//   3
+//  / \
+// 9  20
+//   / \
+// 15   7
+//返回其自底向上的层次遍历为：
+//[
+//    [15, 7],
+//    [9, 20],
+//    [3]
+//]
+vector<vector<int>> levelOrderBottom(TreeNode2* root) {
+    dfs107(root, 0);
+    reverse(res107.begin(), res107.end());
+    return res107;
 }
