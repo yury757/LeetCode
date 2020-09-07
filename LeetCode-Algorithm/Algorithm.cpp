@@ -34,6 +34,7 @@ enum CharType {
 
 int main()
 {
+    void printVector(vector<int> v);
     void printVector(vector<string> v);
     void printTwoVector(vector<vector<int>> v);
     void printTwoVector(vector<vector<char>> v);
@@ -123,6 +124,17 @@ int main()
     void dfs60(vector<int> & nums, int& n, int& k, int& i, string & res60);
     //string getPermutation(int n, int k);
     //cout << getPermutation(8, 234);
+
+    vector<int> topKFrequent(vector<int> & nums, int k);
+    vector<int> v347 = { 1,1,1,2,2,3 };
+    vector<int> res347_temp = topKFrequent(v347, 2);
+    printVector(res347_temp);
+}
+
+void printVector(vector<int> v) {
+    for (int i = 0; i < v.size(); i++) {
+        cout << v[i] << ", ";
+    }
 }
 
 void printVector(vector<string> v) {
@@ -1284,4 +1296,51 @@ vector<vector<int>> levelOrderBottom(TreeNode2* root) {
     dfs107(root, 0);
     reverse(res107.begin(), res107.end());
     return res107;
+}
+
+static bool cmp(pair<int, int>& m, pair<int, int>& n) {
+    return m.second > n.second;
+}
+
+//347. 前 K 个高频元素
+//给定一个非空的整数数组，返回其中出现频率前 k 高的元素。
+//示例 1:
+//输入: nums = [1, 1, 1, 2, 2, 3], k = 2
+//输出 : [1, 2]
+//示例 2 :
+//输入 : nums = [1], k = 1
+//输出 : [1]
+//提示：
+//你可以假设给定的 k 总是合理的，且 1 ≤ k ≤ 数组中不相同的元素的个数。
+//你的算法的时间复杂度必须优于 O(n log n), n 是数组的大小。
+//题目数据保证答案唯一，换句话说，数组中前 k 个高频元素的集合是唯一的。
+//你可以按任意顺序返回答案。
+vector<int> topKFrequent(vector<int>& nums, int k) {
+    unordered_map<int, int> frequency;
+    vector<int> res347;
+    for (int num : nums) {
+        if (frequency.find(num) == frequency.end()) {
+            frequency.emplace(num, 1);
+        }
+        else {
+            frequency[num] += 1;
+        }
+    }
+    priority_queue<pair<int, int>, vector<pair<int, int>>, decltype(&cmp)> q(cmp);
+    for (auto& fre : frequency) {
+        if (q.size() == k) {
+            if (q.top().second < fre.second) {
+                q.pop();
+                q.emplace(fre.first, fre.second);
+            }
+        }
+        else {
+            q.emplace(fre.first, fre.second);
+        }
+    }
+    while (!q.empty()) {
+        res347.emplace_back(q.top().first);
+        q.pop();
+    }
+    return res347;
 }
