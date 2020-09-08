@@ -127,8 +127,12 @@ int main()
 
     vector<int> topKFrequent(vector<int> & nums, int k);
     vector<int> v347 = { 1,1,1,2,2,3 };
-    vector<int> res347_temp = topKFrequent(v347, 2);
-    printVector(res347_temp);
+    //vector<int> res347_temp = topKFrequent(v347, 2);
+    //printVector(res347_temp);
+
+    void dfs77(int start, int n, int k);
+    vector<vector<int>> combine(int n, int k);
+    printTwoVector(combine(4, 2));
 }
 
 void printVector(vector<int> v) {
@@ -1343,4 +1347,38 @@ vector<int> topKFrequent(vector<int>& nums, int k) {
         q.pop();
     }
     return res347;
+}
+vector<vector<int>> res77;
+vector<int> nums_temp77;
+
+void dfs77(int start, int n, int k) {
+    if (n - start < k) {
+        return;
+    }
+    if (k == 0) {
+        res77.push_back(nums_temp77);
+        return;
+    }
+    for (int i = start; i < n; i++) {
+        nums_temp77.push_back(i + 1);
+        dfs77(i + 1, n, k - 1);
+        nums_temp77.pop_back();
+    }
+}
+//77. 组合
+//给定两个整数 n 和 k，返回 1 ... n 中所有可能的 k 个数的组合。
+//示例 :
+//输入: n = 4, k = 2
+//输出 :
+//    [
+//        [2, 4],
+//        [3, 4],
+//        [2, 3],
+//        [1, 2],
+//        [1, 3],
+//        [1, 4],
+//    ]
+vector<vector<int>> combine(int n, int k) {
+    dfs77(0, n, k);
+    return res77;
 }
