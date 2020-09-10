@@ -126,13 +126,23 @@ int main()
     //cout << getPermutation(8, 234);
 
     vector<int> topKFrequent(vector<int> & nums, int k);
-    vector<int> v347 = { 1,1,1,2,2,3 };
+    //vector<int> v347 = { 1,1,1,2,2,3 };
     //vector<int> res347_temp = topKFrequent(v347, 2);
     //printVector(res347_temp);
 
     void dfs77(int start, int n, int k);
     vector<vector<int>> combine(int n, int k);
-    printTwoVector(combine(4, 2));
+    //printTwoVector(combine(4, 2));
+
+    void dfs39(int min_num, vector<int>& candidates, int& target);
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target);
+    //vector<int> nums39 = { 2,3,4,5,6,7,8 };
+    //printTwoVector(combinationSum(nums39, 334));
+
+    void dfs40(vector<int>& candidates, int target, int start, int min_num);
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target);
+    //vector<int> nums39 = { 2, 3, 4, 5, 6, 7, 8 };
+    //printTwoVector(combinationSum2(nums39, 10));
 }
 
 void printVector(vector<int> v) {
@@ -1381,4 +1391,138 @@ void dfs77(int start, int n, int k) {
 vector<vector<int>> combine(int n, int k) {
     dfs77(0, n, k);
     return res77;
+}
+
+vector<vector<int>> res39;
+vector<int> res_temp39;
+
+void dfs39(int min_num, int start, int n, vector<int>& candidates, int &target) {
+    if (min_num > target) {
+        return;
+    }
+    for (int i = start; i < n; i++) {
+        if (candidates[i] < target) {
+            res_temp39.push_back(candidates[i]);
+            target -= candidates[i];
+            dfs39(min_num, start, n, candidates, target);
+            target += candidates[i];
+            res_temp39.pop_back();
+        }
+        else if (candidates[i] == target) {
+            res_temp39.push_back(candidates[i]);
+            res39.push_back(res_temp39);
+            res_temp39.pop_back();
+        }
+        start++;
+    }
+}
+
+//39. 组合总和
+//给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+//candidates 中的数字可以无限制重复被选取。
+//说明：
+//所有数字（包括 target）都是正整数。
+//解集不能包含重复的组合。
+//示例 1：
+//输入：candidates = [2, 3, 6, 7], target = 7,
+//所求解集为：
+//[
+//    [7],
+//    [2, 2, 3]
+//]
+//示例 2：
+//输入：candidates = [2, 3, 5], target = 8,
+//所求解集为：
+//[
+//    [2, 2, 2, 2],
+//    [2, 3, 3],
+//    [3, 5]
+//]
+//提示：
+//1 <= candidates.length <= 30
+//1 <= candidates[i] <= 200
+//candidate 中的每个元素都是独一无二的。
+//1 <= target <= 500
+vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+    if (candidates.size() == 0) {
+        return res39;
+    }
+    int min_num = 500;
+    for (int num : candidates) {
+        min_num = min(min_num, num);
+    }
+    int n = candidates.size();
+    dfs39(min_num, 0, n, candidates, target);
+    return res39;
+}
+
+vector<vector<int>> res40;
+vector<int> res_temp40;
+
+void dfs40(vector<int>& candidates, int target, int start) {
+    if (start == candidates.size() || candidates[start] > target) {
+        return;
+    }
+    int last = 0;
+    for (int i = start; i < candidates.size(); i++) {
+        if (candidates[i] == last) {
+            continue;
+        }
+        if (candidates[i] < target) {
+            res_temp40.push_back(candidates[i]);
+            dfs40(candidates, target - candidates[i], i + 1);
+            res_temp40.pop_back();
+        }
+        else if (candidates[i] == target) {
+            res_temp40.push_back(candidates[i]);
+            res40.push_back(res_temp40);
+            res_temp40.pop_back();
+        }
+        last = candidates[i];
+    }
+}
+//40. 组合总和 II
+//给定一个数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+//candidates 中的每个数字在每个组合中只能使用一次。
+//说明：
+//所有数字（包括目标数）都是正整数。
+//解集不能包含重复的组合。
+//示例 1:
+//输入: candidates = [10, 1, 2, 7, 6, 1, 5], target = 8,
+//所求解集为 :
+//    [
+//        [1, 7],
+//        [1, 2, 5],
+//        [2, 6],
+//        [1, 1, 6]
+//    ]
+//示例 2:
+//输入: candidates = [2, 5, 2, 1, 2], target = 5,
+//所求解集为 :
+//    [
+//        [1, 2, 2],
+//        [5]
+//    ]
+vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+    int max_num = 0;
+    int min_num = 50000;
+    for (int i = 0; i < candidates.size(); i++) {
+        min_num = min(min_num, candidates[i]);
+        max_num = max(max_num, candidates[i]);
+    }
+    map<int, int> frequence; // key: num, value: count
+    vector<int> nums;
+    for (int i = min_num; i <= max_num; i++) {
+        frequence[i] = 0; // 初始化为0
+    }
+    for (int i = 0; i < candidates.size(); i++) {
+        frequence[candidates[i]] ++;
+    }
+    for (pair<int, int> p : frequence) {
+        for (int i = 0; i < p.second; i++) {
+            nums.push_back(p.first);
+        }
+    }
+    dfs40(nums, target, 0);
+    return res40;
 }
