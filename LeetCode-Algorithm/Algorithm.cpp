@@ -143,6 +143,10 @@ int main()
     vector<vector<int>> combinationSum2(vector<int>& candidates, int target);
     //vector<int> nums39 = { 2, 3, 4, 5, 6, 7, 8 };
     //printTwoVector(combinationSum2(nums39, 10));
+
+    void dfs216(int start, int n, int k);
+    vector<vector<int>> combinationSum3(int k, int n);
+    printTwoVector(combinationSum3(3, 7));
 }
 
 void printVector(vector<int> v) {
@@ -1525,4 +1529,44 @@ vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
     }
     dfs40(nums, target, 0);
     return res40;
+}
+
+vector<vector<int>> res216;
+vector<int> res_temp216;
+
+void dfs216(int start, int n, int k) {
+    if (k == 0 || start > n || start > 9) {
+        return;
+    }
+    while (start <= 9) {
+        res_temp216.push_back(start);
+        if (start < n) {
+            dfs216(start + 1, n - start, k - 1);
+        }
+        else if (start == n) {
+            if (k == 1) {
+                res216.push_back(res_temp216);
+                res_temp216.pop_back();
+                break;
+            }
+        }
+        res_temp216.pop_back();
+        start++;
+    }
+}
+
+//216. 组合总和 III
+//找出所有相加之和为 n 的 k 个数的组合。组合中只允许含有 1 - 9 的正整数，并且每种组合中不存在重复的数字。
+//说明：
+//所有数字都是正整数。
+//解集不能包含重复的组合。
+//示例 1:
+//输入: k = 3, n = 7
+//输出 : [[1, 2, 4]]
+//示例 2 :
+//    输入 : k = 3, n = 9
+//    输出 : [[1, 2, 6], [1, 3, 5], [2, 3, 4]]
+vector<vector<int>> combinationSum3(int k, int n) {
+    dfs216(1, n, k);
+    return res216;
 }
