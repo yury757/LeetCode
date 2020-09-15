@@ -146,7 +146,13 @@ int main()
 
     void dfs216(int start, int n, int k);
     vector<vector<int>> combinationSum3(int k, int n);
-    printTwoVector(combinationSum3(3, 7));
+    //printTwoVector(combinationSum3(3, 7));
+
+    bool next37(vector<vector<char>>& board, int x, int y);
+    void solveSudoku(vector<vector<char>>& board);
+    vector<vector<char>> board = { {'5', '3', '.', '.', '7', '.', '.', '.', '.'}, {'6', '.', '.', '1', '9', '5', '.', '.', '.'}, {'.', '9', '8', '.', '.', '.', '.', '6', '.'}, {'8', '.', '.', '.', '6', '.', '.', '.', '3'}, {'4', '.', '.', '8', '.', '3', '.', '.', '1'}, {'7', '.', '.', '.', '2', '.', '.', '.', '6'}, {'.', '6', '.', '.', '.', '.', '2', '8', '.'}, {'.', '.', '.', '4', '1', '9', '.', '.', '5'}, {'.', '.', '.', '.', '8', '.', '.', '7', '9'} };
+    solveSudoku(board);
+    printTwoVector(board);
 }
 
 void printVector(vector<int> v) {
@@ -1569,4 +1575,102 @@ void dfs216(int start, int n, int k) {
 vector<vector<int>> combinationSum3(int k, int n) {
     dfs216(1, n, k);
     return res216;
+}
+
+bool next37(vector<vector<char>>& board, int x, int y) {
+    if (board[x][y] != '.') {
+        if (y < 8) {
+            y++;
+        }
+        else {
+            if (x < 8) {
+                x++;
+                y = 0;
+            }
+            else {
+                return true;
+            }
+        }
+        return next37(board, x, y);
+    }
+    for (int i = 1; i <= 9; i++) {
+        int continue_indicator = 0;
+        // 校验所在行的值
+        for (int yy = 0; yy < 9; yy++) {
+            if (board[x][yy] == to_string(i)[0]) {
+                continue_indicator = 1;
+                break;
+            }
+        }
+        if (continue_indicator == 1) {
+            continue;
+        }
+        continue_indicator = 0;
+        // 校验所在列的值
+        for (int xx = 0; xx < 9; xx++) {
+            if (board[xx][y] == to_string(i)[0]) {
+                continue_indicator = 1;
+                break;
+            }
+        }
+        if (continue_indicator == 1) {
+            continue;
+        }
+        continue_indicator = 0;
+        // 校验所在3x3宫格的值
+        int y_start = (int)(y / 3) * 3;
+        int y_end = y_start + 3;
+        int x_start = (int)(x / 3) * 3;
+        int x_end = x_start + 3;
+        for (int yy = y_start; yy < y_end; yy++) {
+            for (int xx = x_start; xx < x_end; xx++) {
+                if (board[xx][yy] == to_string(i)[0]) {
+                    continue_indicator = 1;
+                    break;
+                }
+            }
+            if (continue_indicator == 1) {
+                break;
+            }
+        }
+        if (continue_indicator == 1) {
+            continue;
+        }
+        // 校验结束，说明i符合要求，把当前位置的值设为i
+        board[x][y] = to_string(i)[0];
+        // 调整x y的值为下一个单元格的坐标
+        int next_x, next_y;
+        if (y < 8) {
+            next_x = x;
+            next_y = y + 1;
+        }
+        else {
+            if (x < 8) {
+                next_x = x + 1;
+                next_y = 0;
+            }
+            else {
+                // x y都为8，即最后一个格子的值也符合要求，结束
+                return true;
+            }
+        }
+        // 如果下一个格子有符合要求的数字，说明该数字也有效，则return true
+        if (next37(board, next_x, next_y) == true) {
+            return true;
+        }
+    }
+    // 循环了该格子所有数字，都无效，说明上一个格子的数字无效，该格子数字重新设为‘.’
+    board[x][y] = '.';
+    return false;
+}
+
+//37. 解数独
+//编写一个程序，通过已填充的空格来解决数独问题。
+//一个数独的解法需遵循如下规则：
+//数字 1 - 9 在每一行只能出现一次。
+//数字 1 - 9 在每一列只能出现一次。
+//数字 1 - 9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。
+//空白格用 '.' 表示。
+void solveSudoku(vector<vector<char>>& board) {
+    next37(board, 0, 0);
 }
