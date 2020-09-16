@@ -1674,3 +1674,30 @@ bool next37(vector<vector<char>>& board, int x, int y) {
 void solveSudoku(vector<vector<char>>& board) {
     next37(board, 0, 0);
 }
+
+//226. 翻转二叉树
+//翻转一棵二叉树。
+//示例：
+//输入：
+//     4
+//    / \
+//   2   7
+//  / \ / \
+// 1  3 6  9
+//输出：
+//     4
+//    / \
+//   7   2
+//  / \ / \
+// 9  6 3  1
+TreeNode* invertTree(TreeNode* root) {
+    if (root == nullptr) {
+        return root;
+    }
+    TreeNode* temp = root->left;
+    root->left = root->right;
+    root->right = temp;
+    invertTree(root->left);
+    invertTree(root->right);
+    return root;
+}
