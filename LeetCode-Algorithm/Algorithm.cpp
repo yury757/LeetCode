@@ -151,8 +151,11 @@ int main()
     bool next37(vector<vector<char>>& board, int x, int y);
     void solveSudoku(vector<vector<char>>& board);
     vector<vector<char>> board = { {'5', '3', '.', '.', '7', '.', '.', '.', '.'}, {'6', '.', '.', '1', '9', '5', '.', '.', '.'}, {'.', '9', '8', '.', '.', '.', '.', '6', '.'}, {'8', '.', '.', '.', '6', '.', '.', '.', '3'}, {'4', '.', '.', '8', '.', '3', '.', '.', '1'}, {'7', '.', '.', '.', '2', '.', '.', '.', '6'}, {'.', '6', '.', '.', '.', '.', '2', '8', '.'}, {'.', '.', '.', '4', '1', '9', '.', '.', '5'}, {'.', '.', '.', '.', '8', '.', '.', '7', '9'} };
-    solveSudoku(board);
-    printTwoVector(board);
+    //solveSudoku(board);
+    //printTwoVector(board);
+
+    int dfs404(TreeNode* root, int is_left);
+    int sumOfLeftLeaves(TreeNode* root);
 }
 
 void printVector(vector<int> v) {
@@ -1700,4 +1703,30 @@ TreeNode* invertTree(TreeNode* root) {
     invertTree(root->left);
     invertTree(root->right);
     return root;
+}
+
+//404. 左叶子之和
+//计算给定二叉树的所有左叶子之和。
+//示例：
+//     3
+//    / \
+//   9  20
+//  / \
+//15   7
+//在这个二叉树中，有两个左叶子，分别是 9 和 15，所以返回 24
+int dfs404(TreeNode* root, int is_left) {
+    if (root == nullptr) return 0;
+    if (root->left == nullptr && root->right == nullptr) {
+        if (is_left == 1) {
+            return root->val;
+        }
+        else {
+            return 0;
+        }
+    }
+    return dfs404(root->left, 1) + dfs404(root->right, 0);
+}
+
+int sumOfLeftLeaves(TreeNode* root) {
+    return dfs404(root, 0);
 }
