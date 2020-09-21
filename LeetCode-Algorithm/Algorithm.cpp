@@ -156,6 +156,14 @@ int main()
 
     int dfs404(TreeNode* root, int is_left);
     int sumOfLeftLeaves(TreeNode* root);
+
+    vector<vector<int>> subsets(vector<int>& nums);
+    //vector<int> nums78 = { 3,7,9,10 };
+    //printTwoVector(subsets(nums78));
+
+    void dfs538(TreeNode*& root, int& sum_value);
+    TreeNode* convertBST(TreeNode* root);
+    TreeNode* convertBST2(TreeNode* root);
 }
 
 void printVector(vector<int> v) {
@@ -1730,3 +1738,63 @@ int dfs404(TreeNode* root, int is_left) {
 int sumOfLeftLeaves(TreeNode* root) {
     return dfs404(root, 0);
 }
+
+//78. 子集
+//给定一组不含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+//说明：解集不能包含重复的子集。
+//示例 :
+//输入: nums = [1, 2, 3]
+//输出 :
+//    [
+//        [3],
+//        [1],
+//        [2],
+//        [1, 2, 3],
+//        [1, 3],
+//        [2, 3],
+//        [1, 2],
+//        []
+//    ]
+vector<vector<int>> subsets(vector<int>& nums) {
+    if (nums.size() == 0) {
+        return { {} };
+    }
+    int last = nums[nums.size() - 1];
+    nums.pop_back();
+    vector<vector<int>> res78 = subsets(nums);
+    int sub_size = res78.size();
+    for (int i = 0; i < sub_size; i++) {
+        vector<int> temp = res78[i];
+        temp.push_back(last);
+        res78.push_back(temp);
+    }
+    return res78;
+}
+
+void dfs538(TreeNode* &root, int &sum_value) {
+    if (root == nullptr) {
+        return;
+    }
+    dfs538(root->right, sum_value);
+    root->val = root->val + sum_value;
+    sum_value = root->val;
+    dfs538(root->left, sum_value);
+}
+
+//538. 把二叉搜索树转换为累加树
+//给定一个二叉搜索树（Binary Search Tree），把它转换成为累加树（Greater Tree)，使得每个节点的值是原来的节点值加上所有大于它的节点值之和。
+//例如：
+//输入 : 原始二叉搜索树:
+//  5
+// / \
+//2   13
+//输出: 转换为累加树:
+//   18
+//  / \
+//20   13
+TreeNode* convertBST(TreeNode* root) {
+    int sum_value = 0;
+    dfs538(root, sum_value);
+    return root;
+}
+
