@@ -169,6 +169,9 @@ int main()
 
     void dfs113(TreeNode* root, vector<int>& nums, int& sum_val, int sum);
     vector<vector<int>> pathSum(TreeNode* root, int sum);
+
+    TreeNode* search(TreeNode* root, TreeNode* p, TreeNode* q);
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q);
 }
 
 void printVector(vector<int> v) {
@@ -1936,4 +1939,42 @@ vector<vector<int>> pathSum(TreeNode* root, int sum) {
     int sum_val = 0;
     dfs113(root, nums, sum_val, sum);
     return res113;
+}
+
+TreeNode* res235;
+
+TreeNode* search(TreeNode* root, TreeNode* p, TreeNode* q){
+    if (!root) return res235;
+    if (p == root || q == root)
+        res235 = p == root ? p : q;
+    else if (p->val > root->val && q->val > root->val)
+        res235 = search(root->right, p, q);
+    else if (p->val < root->val && q->val < root->val)
+        res235 = search(root->left, p, q);
+    else
+        res235 = root;
+    return res235;
+}
+
+//235. 二叉搜索树的最近公共祖先
+//给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。
+//百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+//例如，给定如下二叉搜索树 : root = [6, 2, 8, 0, 4, 7, 9, null, null, 3, 5]
+//       6
+//    /    \
+//   2      8
+//  / \    / \
+// 0   4  7   9
+//    / \
+//   3   5
+//示例 1:
+//输入: root = [6, 2, 8, 0, 4, 7, 9, null, null, 3, 5], p = 2, q = 8
+//输出 : 6
+//解释 : 节点 2 和节点 8 的最近公共祖先是 6。
+//示例 2 :
+//    输入 : root = [6, 2, 8, 0, 4, 7, 9, null, null, 3, 5], p = 2, q = 4
+//    输出 : 2
+//    解释 : 节点 2 和节点 4 的最近公共祖先是 2, 因为根据定义最近公共祖先节点可以为节点本身。
+TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+    return search(root, p, q);
 }
