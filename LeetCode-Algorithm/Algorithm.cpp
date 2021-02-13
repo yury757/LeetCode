@@ -172,6 +172,9 @@ int main()
 
     TreeNode* search(TreeNode* root, TreeNode* p, TreeNode* q);
     TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q);
+
+    vector<int> partitionLabels(string S);
+    printVector(partitionLabels("ababcbacadefegdehijhklij"));
 }
 
 void printVector(vector<int> v) {
@@ -1977,4 +1980,96 @@ TreeNode* search(TreeNode* root, TreeNode* p, TreeNode* q){
 //    解释 : 节点 2 和节点 4 的最近公共祖先是 2, 因为根据定义最近公共祖先节点可以为节点本身。
 TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
     return search(root, p, q);
+}
+
+//763. 划分字母区间
+//字符串 S 由小写字母组成。我们要把这个字符串划分为尽可能多的片段，同一个字母只会出现在其中的一个片段。返回一个表示每个字符串片段的长度的列表。
+//示例 1：
+//输入：S = "ababcbacadefegdehijhklij"
+//输出：[9, 7, 8]
+//解释：
+//划分结果为 "ababcbaca", "defegde", "hijhklij"。
+//每个字母最多出现在一个片段中。
+//像 "ababcbacadefegde", "hijhklij" 的划分是错误的，因为划分的片段数较少。
+//提示：
+//S的长度在[1, 500]之间。
+//S只包含小写字母 'a' 到 'z' 。
+vector<int> partitionLabels(string S) {
+    vector<int> res763;
+    unordered_map<char, vector<int>> s_index;
+    int i = 0;
+    for (char c: S){
+        if (s_index.find(c) == s_index.end()) {
+            s_index[c] = {i, i};
+        }
+        else {
+            s_index[c][1] = i;
+        }
+        i++;
+    }
+    int last = 0;
+    for (unordered_map<char, vector<int>>::iterator iter = s_index.begin(); iter != s_index.end(); iter++) {
+        if (res763.size() == 0) {
+            res763.push_back(iter->second[1]);
+            last = iter->second[1];
+        }
+        if (iter->second[1] > last) {
+            if (iter->second[0] > last) {
+                res763.push_back(iter->second[1]);
+            }
+            else {
+                res763.pop_back();
+                res763.push_back(iter->second[1]);
+            }
+            last = iter->second[1];
+        }
+    }
+    for (i = res763.size() - 1; i >= 0; i--) {
+        if (i == 0) {
+            res763[i] = res763[i] + 1;
+        }
+        else {
+            res763[i] = res763[i] - res763[i - 1];
+        }
+    }
+    return res763;
+}
+
+// Definition for singly - linked list.
+struct ListNode {
+    int val;
+    ListNode* next;
+    ListNode(int x) : val(x), next(NULL) {}
+};
+
+ListNode* reverseList(ListNode*& head) {
+    if (head->next == nullptr) {
+        return head;
+    }
+    ListNode* node = head->next;
+    head->next = node->next;
+    node->next = head;
+
+    ListNode* node = reverseList(head->next);
+    while (true) {
+        if (node->next != nullptr) {
+            node->next;
+        }
+        else {
+            break;
+        }
+    }
+    node->next = head;
+    head->next = node;
+    return node;
+}
+
+ListNode* reverse(ListNode*& head, ListNode*& node) {
+    if (node == nullptr) {
+        return head;
+    }
+    head->next = node->next;
+    node->next = head;
+    node = head->next;
+    return reverse(head, node);
 }
